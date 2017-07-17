@@ -2,19 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" />
-   <link rel="stylesheet" href="../dist/summernote.css">
-   <title>summernote</title>
+  <title>Summernote</title>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script> 
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script> 
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.css" rel="stylesheet">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.js"></script>
+  <script src="./lang/summernote-ko-KR.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h4> <i class="note-icon-summernote"></i> Summernote
-      <span class="label label-info">Bootstrap v3.3.5</span>
-      <span class="label label-success">with Summernote Icons</span>
-    </h4>
-    <div class="summernote"><p>Hello World</p></div>
-  </div>
-  <script data-main="src/js/app" data-editor-type="bs3" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.9/require.min.js"></script>
+<form id="testForm"  action="getHtmlText.php" method="post" enctype="multipart/form-data">
+  <div id="summernote"><p>Hello Summernote</p></div>
+  <input type="button" id="btn_send" value="send" />
+</form>
+  <div id="getResultArea"></div>
+  
+  <script>
+    $(document).ready(function() {
+        $('#summernote').summernote({
+        	  height: 300, 
+        	  width: 800,
+        	  toolbar: [
+        	            // [groupName, [list of button]]
+        	            ['style', ['bold', 'italic', 'underline', 'clear']],
+        	            ['font', ['strikethrough', 'superscript', 'subscript']],
+        	            ['fontsize', ['fontsize']],
+        	            ['color', ['color']],
+        	            ['para', ['ul', 'ol', 'paragraph']],
+        	            ['height', ['height']],
+        	            ['insert',['picture','link']],
+        	            ['misc',['undo','redo','codeview']]
+        	          ],
+          	  lang: 'ko-KR' , // default: 'en-US'
+          	  callbacks:{/*
+          		  onImageUpload:function(files){
+          			  
+          			  var sendData = new FormData();
+          			  sendData.append("imgFile", files[0]);
+          			  $.ajax({
+          				  type:"POST",
+          				  url:"./getHtmlText2.php",
+          				  data:sendData,
+          				  contentType:false,
+          				  cache:false,
+          				  processData:false,
+          				  success:function(getData){
+          					  //alert(getData);
+          					  var image=$('<img>').attr("src", getData);
+          					  $("#summernote").summernote("insertNode",image[0]);
+
+          				  },
+          				  error:function(jqXHR, textStauts, errorThrown){
+          					  alert(textStauts+ "/"+errorThrown);
+          				  }
+          				
+          			  });
+          		  }*/
+          	  }
+          	  
+		});
+        
+          
+        $('#btn_send').click(function(){
+        	var stream = $('#summernote').summernote('code');
+        	//alert(stream);
+           	var xmlhttp = new XMLHttpRequest();
+        	 xmlhttp.open("POST", "getHtmlText.php", false);  //sync 통신
+        	 xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        	 //xmlhttp.setRequestHeader("Content-type", "multipart/form-data");
+        	 //xmlhttp.setRequestHeader("Content-type", "text/text");
+             xmlhttp.send(stream);
+             document.getElementById("getResultArea").innerHTML = xmlhttp.responseText;
+			
+			//alert($('#summernote').summernote('code'));
+
+			/*
+			$.post("getHtmlText.php", {htmlText:($('#summernote').summernote('code'))},
+					function(result){document.getElementById("getResultArea").innerHTML = result;}, "text"
+			);
+			*/
+        });
+    });
+    
+  </script>
 </body>
 </html>
